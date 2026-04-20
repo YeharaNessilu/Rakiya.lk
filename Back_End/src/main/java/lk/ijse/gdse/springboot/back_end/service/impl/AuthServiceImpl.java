@@ -66,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
         mailSender.setPort(587);
 
         mailSender.setUsername("yeharanessilu123@gmail.com");
-        mailSender.setPassword("yehara4228"); // Gmail App Password
+        mailSender.setPassword("bfko cuxh wvbf wmlu"); // Gmail App Password
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
