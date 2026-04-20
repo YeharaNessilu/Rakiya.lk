@@ -1,0 +1,250 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f7fa;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+/* Header Styles */
+header {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    color: white;
+    padding: 15px 0;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.logo i {
+    font-size: 28px;
+}
+
+.page-title {
+    text-align: center;
+    margin: 20px 0;
+    color: #2d3748;
+}
+
+.page-description {
+    text-align: center;
+    color: #718096;
+    margin-bottom: 40px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Preview Section */
+.preview-container {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    margin-top: 40px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.preview-title {
+    font-size: 24px;
+    color: #2d3748;
+    margin-bottom: 20px;
+    text-align: center;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.post-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 10px;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.company-logo {
+    width: 50px;
+    height: 50px;
+    /*background: linear-gradient(135deg, #0066cc 0%, #003366 100%);*/
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.post-meta {
+    flex-grow: 1;
+}
+
+.post-meta h3 {
+    font-size: 18px;
+    margin-bottom: 4px;
+    color: #2c3e50;
+}
+
+.post-date {
+    color: #7f8c8d;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.post-date i {
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+.post-menu {
+    color: #95a5a6;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.3s;
+}
+
+.post-menu:hover {
+    color: #0066cc;
+}
+
+.post-content {
+    padding: 20px;
+}
+
+.caption-item {
+    background:#f0f6ff;
+    color:#1f3a60;
+    padding:8px 14px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.05);
+    transition:background .2s ease, transform .15s ease;
+}
+
+.caption-item i {
+    color:var(--accent);
+    font-size:14px;
+}
+
+.caption-item:hover {
+    background:#e1eeff;
+    transform:translateY(-2px);
+}
+.caption-item i {
+    margin-right: 5px;
+    color: #2575fc;
+}
+
+.post-text {
+    margin-bottom: 20px;
+    line-height: 1.7;
+    color: #34495e;
+}
+
+.post-image {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    max-height: 350px;
+    object-fit: cover;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.post-action {
+    display: flex;
+    align-items: center;
+    color: #7f8c8d;
+    cursor: pointer;
+    transition: color 0.3s;
+    padding: 8px 15px;
+    border-radius: 6px;
+}
+
+.post-action:hover {
+    background-color: #f8f9fa;
+    color: #0066cc;
+}
+
+.post-action i {
+    margin-right: 8px;
+    font-size: 16px;
+}
+@media (max-width: 900px) {
+    .form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .job-caption {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    .form-container {
+        padding: 20px;
+    }
+
+    .skills-input-container {
+        flex-direction: column;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+}
+

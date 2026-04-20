@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>User Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="css/UserHomePageCss.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /*h1 { text-align:center; color:#333; margin-bottom:20px; }*/
+        .form-section { margin-bottom:25px; }
+        /*.form-section h3 { color:#4CAF50; margin-bottom:10px; display:flex; align-items:center; gap:8px; }*/
+        .form-section textarea { width:100%; border-radius:8px; border:1px solid #ccc; padding:10px; font-size:14px; resize:none; }
+        .openMap { background: white;  color: #424141; border:none; ; font-size:14px; border-radius:6px; cursor:pointer; transition:0.3s; }
+        .openMap:hover{color: #1a5edb}
+        .form-section button:hover { opacity:0.9; }
+
+        /* Modal Styles */
+        .modal { display: none; position: fixed; z-index: 1000; left:0; top:0; width:100%; height:100%; background-color: rgba(0,0,0,0.6); animation: fadeInBg 0.3s ease; }
+        @keyframes fadeInBg { from{opacity:0;} to{opacity:1;} }
+        .modal-content { background:#fff; margin:5% auto; padding:15px; width:90%; max-width:1200px; max-height:100vh; overflow-y:auto; border-radius:12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: scaleIn 0.3s ease; position:relative; }
+        @keyframes scaleIn { from{transform:scale(0.95); opacity:0;} to{transform:scale(1); opacity:1;} }
+
+        .close { position:absolute; top:2px; right:20px; font-size:35px; font-weight:bold; cursor:pointer; color:#333; transition:0.3s; }
+        .close:hover { color:#f44336; }
+
+        #map { height: 65vh; width: 100%; border-radius:10px; border:1px solid #ccc; margin-bottom:15px; }
+
+        #controls { text-align:center; margin-top:10px; display:flex; justify-content:center; gap:12px; }
+        #controls button { padding:8px 16px; font-size:14px; border-radius:6px; cursor:pointer; font-weight:500; transition:0.3s; }
+        /*#setLocationBtn { background:#4CAF50; color:#fff; border:none; }*/
+        /*#setLocationBtn:hover { opacity:0.9; }*/
+        /*#clearBtn { background:#f44336; color:#fff; border:none; }*/
+        /*#clearBtn:hover { opacity:0.9; }*/
+
+        /* Popup marker custom style */
+        .leaflet-popup-content-wrapper { border-radius:8px; border:1px solid #4CAF50; }
+        .leaflet-popup-content { font-size:14px; line-height:1.4; }
+
+        #suggestions {
+            display: none;
+            position: absolute;
+            top: 10px;
+            /*left: 0;*/
+            /*right: 0;*/
+            z-index: 1050;
+            border-radius: 0 0 0.5rem 0.5rem;
+            max-height: 220px;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.35);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            margin-top: 40px;
+        }
+        .suggestion-item {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        .suggestion-item:hover {
+            background: #f0f0f0;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px; /* icon සහ text එක අතර gap */
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent, #40ff00); /* default accent color */
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .brand i {
+            font-size: 1.8rem;
+            color: var(--accent, #7e7e7e);
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .brand:hover i {
+            transform: rotate(-10deg) scale(1.1);
+            color: #69ac3d;
+        }
+
+    </style>
+
+
+</head>
+<body>
+<!-- HEADER -->
+<header class="topbar d-flex align-items-center justify-content-between px-3 sticky-top shadow-sm"
+        style="background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); height:64px;">
+    <!-- Brand / Logo -->
+    <div class="brand">
+        <i class="fas fa-briefcase"></i>
+        <span>WorkHub</span>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="flex-grow-1 mx-3 d-none d-md-block">
+        <form class="d-flex">
+            <input id="jobSearchBar" class="form-control form-control-sm rounded-pill" type="search" placeholder="Search..." aria-label="Search" autocomplete="off">
+            <div id="suggestions" class="suggestions list-group shadow-sm"></div>
+        </form>
+    </div>
+
+    <!-- Profile + Messenger -->
+    <div class="d-flex align-items-center gap-3">
+        <!-- Messenger Icon -->
+        <button id="chatBtn" class="btn btn-light btn-sm rounded-circle position-relative">
+            💬
+<!--            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">-->
+<!--                -->
+<!--            </span>-->
+        </button>
+
+        <!-- Profile Dropdown -->
+        <div class="dropdown">
+            <a href="#" class="d-flex align-items-center text-decoration-none" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <img id="userProfilePhoto" alt="Profile" class="rounded-circle" width="40" height="40">
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                <li><a class="dropdown-item" href="UserProfile.html">My Profile</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a id="logOut_Btn" class="dropdown-item text-danger" href="#">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+
+<div class="container-fluid mt-3">
+    <div class="row g-3">
+        <!-- LEFT SIDEBAR -->
+        <aside  class="col-lg-2 d-none d-md-block">
+            <div id="companyContainer" class="card-custom p-3 d-flex flex-column sticky-sidebar">
+                <!-- Search Bar -->
+                <div class="mb-3">
+                    <input type="text" class="form-control form-control-sm rounded-pill" placeholder="Search company...">
+                </div>
+
+<!--                <div id="companyContainer" class="d-flex flex-column align-items-center text-center company-card"></div>-->
+
+                <!-- Company Profile (clickable) -->
+<!--                <div class="d-flex flex-column align-items-center text-center company-card" style="cursor:pointer;">-->
+<!--                    <img src="https://i.pravatar.cc/80?img=55" alt="Company Logo" class="rounded-circle mb-2" width="80" height="80">-->
+<!--                    <div class="fw-semibold">YourCompany</div>-->
+<!--                    <small class="text-muted mb-2">Innovating your workflow</small>-->
+<!--                    <button class="btn btn-sm w-100 rounded-pill followBtn">Follow</button>-->
+<!--                </div>-->
+
+<!--                <div class="mt-auto small text-muted">© 2025</div>-->
+            </div>
+        </aside>
+        <!-- CENTER FEED -->
+        <main class="col-lg-7 col-md-8">
+            <div id="previewContainer" class="postContainer"></div>
+
+            <!-- FEED SECTION -->
+<!--            <div id="feedSection">-->
+<!--                <div class="card-custom p-4 mb-3 shadow-sm">-->
+<!--                    <div class="post-header feed-profile" style="cursor:pointer;">-->
+<!--                        <img src="https://i.pravatar.cc/40?img=12" alt="User" class="rounded-circle me-2">-->
+<!--                        <div>-->
+<!--                            <div class="name">Thamidu Chamod</div>-->
+<!--                            <div class="time">2 hrs ago</div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <p class="text-muted">මෙතන විශාල content / image එකක් දාන්න පුළුවන්.</p>-->
+<!--                </div>-->
+
+<!--                <div class="card-custom p-4 mb-3 shadow-sm">-->
+<!--                    <div class="post-header feed-profile" style="cursor:pointer;">-->
+<!--                        <img src="https://i.pravatar.cc/40?img=32" alt="User" class="rounded-circle me-2">-->
+<!--                        <div>-->
+<!--                            <div class="name">Jane Doe</div>-->
+<!--                            <div class="time">5 hrs ago</div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <p class="text-muted">Facebook feed එකේ post වගේ content එකක්.</p>-->
+<!--                </div>-->
+
+<!--                <div class="card-custom p-4 mb-3 shadow-sm">-->
+<!--                    <div class="post-header feed-profile" style="cursor:pointer;">-->
+<!--                        <img src="https://i.pravatar.cc/40?img=5" alt="User" class="rounded-circle me-2">-->
+<!--                        <div>-->
+<!--                            <div class="name">John Smith</div>-->
+<!--                            <div class="time">Yesterday</div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <p class="text-muted">අලුත් update එකක් මෙතන දාන්න.</p>-->
+<!--                </div>-->
+<!--            </div>-->
+
+
+            <!-- PROFILE PREVIEW SECTION (hidden default) -->
+            <div id="profilePreview" class="d-none">
+                <div class="card-custom p-3 mb-3 shadow-sm position-relative" style="height:80vh; overflow-y:auto; scrollbar-width:none; -ms-overflow-style:none;">
+                    <!-- Close Button -->
+                    <button id="closeProfile" class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 rounded-circle shadow-sm">✖</button>
+
+                    <!-- Profile Header -->
+                    <div class="text-center mb-3">
+                        <img src="https://i.pravatar.cc/100?img=55" class="rounded-circle mb-2" width="100" height="100" alt="Company">
+                        <h5 class="mb-1">YourCompany</h5>
+                        <small class="text-muted">Innovating your workflow</small>
+                        <div class="mt-2">
+                            <button class="btn btn-sm rounded-pill followBtn">Follow</button>
+                        </div>
+
+                        <!-- Followers only -->
+                        <div class="d-flex justify-content-center mt-3">
+                            <div>
+                                <div class="fw-bold">1.2K</div>
+                                <small class="text-muted">Followers</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Company Posts -->
+                    <h6 class="mb-3 text-muted">Posts</h6>
+                    <div class="d-flex flex-column gap-2">
+                        <div class="card-custom p-3 shadow-sm">Company Post 1</div>
+                        <div class="card-custom p-3 shadow-sm">Company Post 2</div>
+                        <div class="card-custom p-3 shadow-sm">Company Post 3</div>
+                        <div class="card-custom p-3 shadow-sm">Company Post 4</div>
+                        <div class="card-custom p-3 shadow-sm">Company Post 5</div>
+                        <div class="card-custom p-3 shadow-sm">Company Post 6</div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+        <!-- RIGHT SIDEBAR -->
+        <aside class="col-lg-3 d-none d-lg-block">
+            <div class="card-custom p-3 shadow-sm sticky-sidebar">
+                <h5>Quick</h5>
+                <p class="text-muted mb-2">Notifications / Short widgets</p>
+                <hr>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center justify-content-center rounded bg-light text-primary" style="width:36px;height:36px;">
+
+                    </div>
+<!--                    <span class="text-muted small">No new notifications</span>-->
+                    <div id="notificationContainer"></div>
+
+<!--                    <div id="notificationContainer" style="position: fixed; top: 20px; right: 20px; width: 300px; z-index: 9999;"></div>-->
+
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<div id="locationModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>Select Locations</h3>
+        <div id="map"></div>
+
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/UserHomePageJs.js"></script>
+<script src="js/UserPostJs.js"></script>
+<script src="js/CompanyProfileCard.js"></script>
+
+
+
+<script>
+    const searchBar = $("#jobSearchBar");
+    const suggestions = $("#suggestions");
+    let token = localStorage.getItem("token");
+
+    searchBar.on('input', function () {
+        const query = searchBar.val().trim();
+        if (query.length < 1) {
+            suggestions.hide();
+            return;
+        }
+        fetch(`http://localhost:8080/user/searchJob?query=${query}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        })
+            .then(res => res.json())
+            .then(response => {
+                console.log(response.data)
+
+                const uniqueJobs = [...new Set(response.data)];
+                suggestions.empty();
+
+                if (uniqueJobs.length > 0) {
+                    uniqueJobs.forEach(job => {
+                        suggestions.append(`
+              <button type="button"
+                      class="list-group-item list-group-item-action small py-2">
+                ${job}
+              </button>`);
+                    });
+                    suggestions.show();
+                } else {
+                    suggestions.hide();
+                }
+            });
+    });
+    // click handler
+    $(document).on("click", "#suggestions .list-group-item", function () {
+        const selected = $(this).text().trim();
+        searchBar.val("");
+        searchBar.val(selected);
+        suggestions.hide();
+        getSearched(selected);
+
+
+    });
+
+    // hide when clicking outside
+    $(document).on("click", function (e) {
+        if (!$(e.target).closest("#jobSearchBar, #suggestions").length) {
+            suggestions.hide();
+        }
+    });
+
+
+
+    function getSearched(query) {
+        page = 0;
+        jobs = [];
+        const token = localStorage.getItem('token')
+
+        fetch(`http://localhost:8080/user/getSearchJob?query=${query}`, {
+            method:'GET',
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        }).then(res => res.json())
+            .then(response => {
+                const newJobs = response.data; // API එකේ page එකේ posts
+
+                if (newJobs.length > 0) {
+                    console.log("search result");
+                    console.log("length "+ newJobs.length)
+                    newJobs.forEach(job => {
+                        // if (!jobs.some(j => j.id === job.id)) { // check duplicate by ID
+                            jobs.push(job);
+                            renderPosts([job]);
+                            // render one by one
+                        // }
+                    });
+                }
+
+                else {
+                    window.removeEventListener("scroll", loadOnScroll); // ✅ remove properly
+
+                    console.log("No more posts");
+                }
+            })
+            .finally(() => {
+                loading = false; // finish loading
+            });
+    }
+
+
+    document.getElementById("chatBtn").addEventListener("click", () => {
+        const jobId = -1
+        const token = localStorage.getItem("token");
+        const userName = parseJwt(token).sub;
+        console.log("chatss")
+        // Navigate to chat page
+        window.location.assign(`chat.html?jobId=${jobId}&userName=${encodeURIComponent(userName)}`);
+    });
+
+
+
+
+</script>
+
+<script>
+    // Show profile preview
+    // document.querySelector(".company-card").addEventListener("click", function () {
+    //     document.getElementById("feedSection").classList.add("d-none");
+    //     document.getElementById("profilePreview").classList.remove("d-none");
+    // });
+
+    // Close button action
+    document.getElementById("closeProfile").addEventListener("click", function () {
+        document.getElementById("profilePreview").classList.add("d-none");
+        document.getElementById("feedSection").classList.remove("d-none");
+    });
+    // Function to open profile preview
+    function openProfilePreview() {
+        document.getElementById("feedSection").classList.add("d-none");
+        document.getElementById("profilePreview").classList.remove("d-none");
+    }
+
+    // Add click listeners to all feed-profile elements
+    document.querySelectorAll(".feed-profile").forEach(function(profile) {
+        profile.addEventListener("click", openProfilePreview);
+    });
+
+    // Company card click (optional, already exists)
+    // document.querySelector(".company-card").addEventListener("click", openProfilePreview);
+
+    // Close button action
+    document.getElementById("closeProfile").addEventListener("click", function () {
+        document.getElementById("profilePreview").classList.add("d-none");
+        document.getElementById("feedSection").classList.remove("d-none");
+    });
+
+    document.addEventListener("DOMContentLoaded",() =>{
+        console.log("aaa")
+        getProfilePhoto();
+        getOldNotification();
+
+
+    });
+    let userId = -1
+    function getUserId() {
+        const token = localStorage.getItem("token");
+
+        fetch('http://localhost:8080/user/userId', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        })
+            .then(res => res.json())
+            .then(response => {
+                 userId = response.data
+
+            })
+    }
+
+    function getProfilePhoto() {
+        const token = localStorage.getItem("token");
+
+        fetch('http://localhost:8080/user/userProfilePhoto', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        })
+            .then(res => res.json())
+            .then(response => {
+                $("#userProfilePhoto").attr("src", response.data);
+
+            })
+    }
+
+
+    const evtSource = new EventSource(`http://localhost:8080/notification/stream/${userId}`);
+
+    evtSource.onopen = () => {
+        console.log("SSE connection opened")
+        getOldNotification();
+    };
+
+    evtSource.addEventListener("notification", event => {
+        const data = JSON.parse(event.data);
+        console.log("Notification received:", data);
+        console.log(data.companyName)
+        data.forEach(d =>{
+            addLiveNotification(d.companyName, d.profileImage, d.message)
+
+        })
+
+    });
+    function addLiveNotification(companyName, companyImage, message) {
+        const container = document.getElementById("notificationContainer");
+        // Create card
+        const card = document.createElement("div");
+        card.className = "notification-card";
+
+        card.innerHTML = `
+        <img class="company-logo" src=${companyImage} alt="Company Logo"/>
+        <div class="notification-text">
+            <h3 id="profileNme">${companyName}</h3>
+            <span id="messages">${message}</span>
+        </div>
+    `;
+
+        // Add to container
+        container.prepend(card);
+
+        // Trigger animation
+        setTimeout(() => card.classList.add("show"), 50);
+
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            card.classList.remove("show");
+            setTimeout(() => card.remove(), 400);
+            }, 5000)
+    }
+
+
+    evtSource.onerror = (err) => console.error("SSE error:", err);
+
+    function getOldNotification(){
+        console.log("run")
+        const token = localStorage.getItem("token");
+
+        fetch('http://localhost:8080/user/notifications', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        })
+            .then(res => res.json())
+            .then(response => {
+                console.log(response.data)
+                response.data.forEach(d =>{
+                    addNotification(d.companyName, d.profileImage, d.message)
+                })
+
+
+
+            })
+    }
+    // addNotification(
+    //     "Google",
+    //     "https://logo.clearbit.com/google.com",
+    //     "New job posted!"
+    // );
+
+
+    function addNotification(companyName, companyImage, message) {
+        console.log(companyName)
+        const container = document.getElementById("notificationContainer");
+        // Create card
+        const card = document.createElement("div");
+        card.className = "notification-card";
+
+        card.innerHTML = `
+        <img class="company-logo" src=${companyImage} alt="Company Logo"/>
+        <div class="notification-text">
+            <h3 id="profileNme">${companyName}</h3>
+            <span id="messages">${message}</span>
+        </div>
+    `;
+
+        // Add to container
+        container.prepend(card);
+
+        // Trigger animation
+        setTimeout(() => card.classList.add("show"), 50);
+
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            // card.classList.remove("show");
+            // setTimeout(() => card.remove(), 400);
+        }, 5000);
+    }
+
+
+
+</script>
+
+<script>
+
+    // Select all see location buttons
+    document.querySelectorAll(".openMapBtn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            openModal();
+        });
+    });
+
+    // Open modal function
+    var map = L.map('map').setView([7.8731, 80.7718], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution:'© OpenStreetMap contributors'
+    }).addTo(map);
+
+    var markers = [];
+    var selectedLocations = [];
+    selectedLocations.push({
+        name: "Default Location",
+        lat: 7.8731,
+        lng: 80.7718
+    });
+
+    // Geocoder Search
+    // var geocoder = L.Control.geocoder({ defaultMarkGeocode: false })
+    //     .on('markgeocode', function(e) {
+    //         var center = e.geocode.center;
+    //         var name = e.geocode.name;
+    //         selectedLocations.push({name:name, lat:center.lat, lng:center.lng});
+    //         openModal();
+    //         map.setView(center, 12);
+    //     }).addTo(map);
+    //
+    // // Manual click select
+    // map.on('click', function(e){
+    //     selectedLocations.push({name:"Manual Selected", lat:e.latlng.lat, lng:e.latlng.lng});
+    //     openModal();
+    // });
+
+    // Modal open/close
+    function openModal(locationText) {
+        document.getElementById("locationModal").style.display = "block";
+        document.body.style.overflow = "hidden";
+
+        setTimeout(()=> {
+            map.invalidateSize();
+
+            // Clear old markers
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+            selectedLocations = [];
+
+            if(locationText) {
+                // 🟢 Split by lines (1., 2., etc.)
+                let lines = locationText.split("\n");
+
+                lines.forEach(line => {
+                    // Find coordinates inside ()
+                    let match = line.match(/\(([-\d.]+),\s*([-\d.]+)\)/);
+                    if(match){
+                        let lat = parseFloat(match[1]);
+                        let lng = parseFloat(match[2]);
+
+                        // Name = line without coordinates
+                        let name = line.replace(/\(.*\)/, "").trim();
+
+                        selectedLocations.push({name, lat, lng});
+                    }
+                });
+            }
+
+            // Render all selected markers
+            selectedLocations.forEach(loc=>{
+                var marker = L.marker([loc.lat, loc.lng]).addTo(map)
+                    .bindPopup(loc.name + "<br>("+loc.lat.toFixed(4)+", "+loc.lng.toFixed(4)+")")
+                    .openPopup();
+                markers.push(marker);
+            });
+
+            // Fit map bounds to markers
+            if(markers.length>0){
+                var group = new L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.2));
+            }
+
+        }, 300);
+    }
+
+
+    function closeModal() {
+        document.getElementById("locationModal").style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+
+
+</script>
+
+
+<style>
+    /* Hide scroll bar but keep scroll */
+    #profilePreview .card-custom::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+</body>
+</html>

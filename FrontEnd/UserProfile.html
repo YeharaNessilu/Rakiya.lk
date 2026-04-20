@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>User Profile - WorkHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+  <style>
+    :root {
+      --primary: #2b7cff;
+      --primary-light: #e8f2ff;
+      --secondary: #6c757d;
+      --dark: #343a40;
+      --light: #f8f9fa;
+      --success: #28a745;
+      --border-radius: 16px;
+      --shadow: 0 8px 24px rgba(0,0,0,0.06);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f3f6f8 0%, #e9eef3 100%);
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+      color: #495057;
+    }
+
+    /* Enhanced Header Styles */
+    header.topbar {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(225,230,234,0.7);
+      height: 70px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    }
+
+    /*profile ====================================*/
+
+    .profile-container {
+      max-width: 100%;
+      /*margin: 50px auto;*/
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+      overflow: hidden;
+      text-align: center;
+
+    }
+
+    .profile-header {
+      position: relative;
+      height: 200px;
+      background: #3494e6;
+      overflow: hidden;
+    }
+
+    .profile-banner {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .banner-edit {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--primary);
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .profile-header:hover .banner-edit {
+      opacity: 1;
+    }
+
+    .profile-avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      margin: -70px auto 10px;
+      position: relative;
+      overflow: hidden;
+      border: 4px solid #fff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-avatar-edit {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: var(--primary);
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .profile-avatar:hover .profile-avatar-edit {
+      opacity: 1;
+    }
+    .profileDetails{
+      width: 100%;
+      margin-left:80px ;
+    }
+
+    .profile-name,
+    .profile-title,
+    .profile-location {
+      margin: 8px 0;
+      transition: var(--transition);
+      border-radius: 6px;
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+    }
+
+    .editable[contenteditable="true"] {
+      border: 1px dashed var(--primary);
+      background: var(--primary-light);
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 5px;
+      transition: var(--transition);
+    }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-secondary { background: var(--secondary); color: white; }
+    .btn:hover { opacity: 0.9; }
+
+    /*==================================*/
+
+
+    .brand {
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
+
+    /* Enhanced Card Styles */
+    .card-custom {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(225,230,234,0.6);
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+
+    .card-custom:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+    }
+
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+
+
+    .profile-avatar:hover .profile-avatar-edit {
+      opacity: 1;
+    }
+
+
+
+    .profile-actions .btn {
+      border-radius: 50px;
+      font-weight: 600;
+      padding: 10px 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: var(--transition);
+    }
+
+    .profile-actions .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+
+
+    /* Enhanced Tabs */
+    .profile-content {
+      padding: 0 25px 25px;
+    }
+
+    .nav-tabs {
+      border-bottom: 2px solid rgba(0,0,0,0.06);
+      margin-bottom: 25px;
+    }
+
+    .nav-tabs .nav-link {
+      border: none;
+      color: var(--secondary);
+      font-weight: 600;
+      padding: 15px 25px;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .nav-tabs .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: var(--primary);
+      transition: var(--transition);
+      border-radius: 3px 3px 0 0;
+    }
+
+    .nav-tabs .nav-link:hover {
+      color: var(--primary);
+      background: rgba(43,124,255,0.05);
+    }
+
+    .nav-tabs .nav-link.active {
+      color: var(--primary);
+      background: transparent;
+    }
+
+    .nav-tabs .nav-link.active::after {
+      width: 100%;
+    }
+
+    .tab-content {
+      padding: 10px 0 20px;
+    }
+
+    /* Enhanced Skill Badges */
+    .skill-badge {
+      background: linear-gradient(135deg, var(--primary-light) 0%, #e1eeff 100%);
+      color: #1f3a60;
+      padding: 10px 18px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 10px 12px 0;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+      transition: var(--transition);
+      border: 1px solid rgba(43,124,255,0.2);
+      cursor: pointer;
+    }
+
+    .skill-badge:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .skill-badge i {
+      color: var(--primary);
+      font-size: 14px;
+    }
+
+    /* Enhanced Experience Items */
+    .experience-item {
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .experience-item:hover {
+      background: rgba(0,0,0,0.02);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .experience-item:last-child {
+      border-bottom: none;
+    }
+
+    .experience-title {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+
+    .experience-company {
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .experience-date {
+      color: var(--secondary);
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .experience-description {
+      color: var(--secondary);
+      line-height: 1.6;
+    }
+
+    /* Editable Fields */
+    .editable {
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .editable:hover::after {
+      content: '\f303';
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      position: absolute;
+      right: -25px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary);
+      font-size: 14px;
+    }
+
+    .editable-field {
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 5px 10px;
+      transition: var(--transition);
+      cursor: text;
+    }
+
+    .editable-field:hover {
+      border-color: var(--primary-light);
+      background-color: rgba(43,124,255,0.05);
+    }
+
+    .editable-field:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(43,124,255,0.1);
+    }
+
+    /* Section Headings */
+    .section-heading {
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--dark);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .add-btn {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: none;
+      border-radius: 50px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 3px;
+      transition: var(--transition);
+    }
+    .btn_container{
+      display: flex;
+    }
+
+    .add-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+      .profile-avatar {
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: -60px;
+        width: 120px;
+        height: 120px;
+      }
+
+      .profile-info {
+        margin-top: 75px;
+        text-align: center;
+      }
+
+      .profile-actions {
+        position: relative;
+        justify-content: center;
+        bottom: 0;
+        right: 0;
+        margin-top: 20px;
+      }
+
+      .profile-stats {
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .profile-header {
+        height: 200px;
+      }
+
+      .profile-name {
+        font-size: 24px;
+      }
+
+      .profile-title {
+        font-size: 16px;
+      }
+
+      .nav-tabs .nav-link {
+        padding: 12px 15px;
+        font-size: 14px;
+      }
+    }
+  </style>
+  <style>
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px; /* icon සහ text එක අතර gap */
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent, #007bff); /* default accent color */
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .brand i {
+      font-size: 1.8rem;
+      color: var(--accent, #007bff);
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    .brand:hover i {
+      transform: rotate(-10deg) scale(1.1);
+      color: #ff6b6b;
+    }
+
+  </style>
+
+</head>
+<body>
+<!-- HEADER -->
+<header class="topbar d-flex align-items-center justify-content-between px-4 sticky-top">
+  <!-- Brand / Logo -->
+  <div class="brand">
+    <i class="fas fa-briefcase"></i>
+    <span>WorkHub</span>
+  </div>
+
+
+  <!--  &lt;!&ndash; Search Bar &ndash;&gt;-->
+<!--&lt;!&ndash;  <div class="flex-grow-1 mx-4 d-none d-md-block" style="max-width: 500px;">&ndash;&gt;-->
+<!--&lt;!&ndash;    <form class="d-flex">&ndash;&gt;-->
+<!--&lt;!&ndash;      <div class="input-group input-group-sm">&ndash;&gt;-->
+<!--&lt;!&ndash;                <span class="input-group-text bg-transparent border-end-0">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <i class="fas fa-search text-secondary"></i>&ndash;&gt;-->
+<!--&lt;!&ndash;                </span>&ndash;&gt;-->
+<!--&lt;!&ndash;        <input class="form-control border-start-0 rounded-end-pill" type="search" placeholder="Search..." aria-label="Search">&ndash;&gt;-->
+<!--&lt;!&ndash;      </div>&ndash;&gt;-->
+<!--&lt;!&ndash;    </form>&ndash;&gt;-->
+<!--&lt;!&ndash;  </div>&ndash;&gt;-->
+
+<!--  &lt;!&ndash; Profile + Messenger &ndash;&gt;-->
+<!--  <div class="d-flex align-items-center gap-3">-->
+<!--    &lt;!&ndash; Messenger Icon &ndash;&gt;-->
+<!--    <button class="btn btn-light btn-sm rounded-circle position-relative p-2">-->
+<!--      <i class="fas fa-comment-dots"></i>-->
+<!--      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">-->
+<!--                3-->
+<!--            </span>-->
+<!--    </button>-->
+
+
+<!--    &lt;!&ndash; Profile Dropdown &ndash;&gt;-->
+<!--    <div class="dropdown">-->
+<!--      <a href="#" class="d-flex align-items-center text-decoration-none" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--        <img src="https://i.pravatar.cc/40?img=12" alt="Profile" class="rounded-circle" width="40" height="40">-->
+<!--      </a>-->
+<!--      <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="profileDropdown">-->
+<!--        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>-->
+<!--        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>-->
+<!--        <li><hr class="dropdown-divider"></li>-->
+<!--        <li><a id="logOut_Btn" class="dropdown-item text-danger" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>-->
+<!--      </ul>-->
+<!--    </div>-->
+<!--  </div>-->
+</header>
+
+<div class="container-fluid mt-4">
+  <div class="row g-4">
+    <!-- MAIN CONTENT - PROFILE -->
+    <main class="col-lg-8 col-xl-9">
+      <div class="card-custom">
+
+        <div class="profile-container">
+          <!-- Profile Header / Banner -->
+          <div class="profile-header">
+            <img  id="profileBanner" class="profile-banner">
+            <div class="banner-edit" onclick="document.getElementById('bannerUpload').click();">
+              <i class="fas fa-camera"></i>
+            </div>
+            <input type="file" id="bannerUpload" accept="image/*" style="display:none;" onchange="previewAndUploadImage(event, 'banner')">
+
+          </div>
+
+          <!-- Profile Avatar -->
+          <div class="profile-avatar">
+            <img id="profileImage" src="https://i.pravatar.cc/140?img=12" alt="Avatar">
+            <div class="profile-avatar-edit" onclick="document.getElementById('avatarUpload').click();">
+              <i class="fas fa-camera"></i>
+            </div>
+            <input type="file" id="avatarUpload" accept="image/*" style="display:none;" onchange="previewAndUploadImage(event, 'avatar')">
+          </div>
+
+          <!-- Profile Info -->
+          <div class="profileDetails">
+            <h1 class="profile-name editable" id="profileName">Thamidu Chamod</h1>
+            <p class="profile-title editable" id="profileTitle">Senior UI/UX Designer at TechCorp</p>
+            <div class="profile-location editable" id="profileLocation">
+            <i class="fas fa-map-marker-alt"></i> Colombo, Sri Lanka
+          </div>
+          </div>
+
+          <!-- Buttons -->
+          <div id="actionButtons">
+            <button class="btn btn-primary" id="editBtn"><i class="fas fa-pencil-alt"></i> Edit</button>
+          </div>
+        </div>
+
+        <!-- Profile Content Tabs -->
+        <div class="profile-content">
+
+          <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab">
+                <i class="fas fa-user me-2"></i> About
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="experience-tab" data-bs-toggle="tab" data-bs-target="#experience" type="button" role="tab">
+                <i class="fas fa-briefcase me-2"></i> Experience
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button" role="tab">
+                <i class="fas fa-star me-2"></i> Skills
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="profileTabContent">
+
+
+            <!-- About Tab -->
+            <div class="tab-pane fade show active" id="about" role="tabpanel">
+              <div class="section-heading">
+                <span>About Me</span>
+                <div class="btn_container">
+                  <button class="add-btn add" id="editAboutBtn">
+                    <i class="fas fa-pencil-alt me-2"></i> Edit Education
+                  </button>
+                  <button class="add-btn" id="saveAboutBtn">
+                    <i class="fas fa-save me-2"></i> Save
+                  </button>
+                  <button class="add-btn cancel" id="cancelAboutBtn">
+                     cancel
+                  </button>
+                </div>
+              </div>
+              <div class="editable-field" contenteditable="false" id="aboutText">
+                Creative UI/UX designer with 5+ years of experience creating beautiful and functional user interfaces. Passionate about user-centered design and creating products that people love to use. Specialized in designing complex enterprise applications with a focus on usability and accessibility.
+              </div>
+
+              <div class="row mb-4 mt-4">
+                <div class="col-md-6">
+                  <h5 class="text-primary mb-3"><i class="fas fa-graduation-cap me-2"></i> Education</h5>
+                  <div class="ps-3">
+                    <div class="editable-field mb-2" id="eduName" contenteditable="false">BSc in Computer Science</div>
+                    <div class="editable-field text-muted mb-2" id="eduPlace" contenteditable="false">University of Colombo</div>
+                    <div class="editable-field text-muted small" id="eduYear" contenteditable="false">2015 - 2019</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <h5 class="text-primary mb-3"><i class="fas fa-address-card me-2"></i> Contact</h5>
+                  <div class="ps-3">
+                    <div id="conEmail" class="editable-field mb-2" contenteditable="false"><i class="fas fa-envelope me-2 text-primary"></i> thamidu@example.com</div>
+                    <div id="conPhone" class="editable-field mb-2" contenteditable="false"><i class="fas fa-phone me-2 text-primary"></i> +94 77 123 4567</div>
+                    <div id="conPort" class="editable-field mb-0" contenteditable="false"><i class="fas fa-link me-2 text-primary"></i> thamiduportfolio.com</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Experience Tab -->
+            <div class="tab-pane fade" id="experience" role="tabpanel">
+              <div class="section-heading">
+                <span>Work Experience</span>
+                <div class="btn_container">
+                  <button class="add-btn add" id="editExperienceBtn">
+                    <i class="fas fa-pencil-alt me-2"></i> Edit Experience
+                  </button>
+                  <button class="add-btn add" id="addExperienceItemBtn">
+                    <i class="fas fa-plus"></i> Add Experience
+                  </button>
+                  <button class="add-btn" id="saveExperienceBtn">
+                    <i class="fas fa-save me-2"></i> Save
+                  </button>
+                  <button class="add-btn cancel" id="cancelExperienceBtn">
+                    Cancel
+                  </button>
+                </div>
+
+              </div>
+
+<!--              <div class="experience-item editable" data-id="1">-->
+<!--                <div class="d-flex justify-content-between align-items-start">-->
+<!--                  <div class="editable-field experience-title" contenteditable="false">Senior UI/UX Designer</div>-->
+<!--                  <span class="badge bg-primary">Current</span>-->
+<!--                </div>-->
+<!--                <div class="editable-field experience-company" contenteditable="false">TechCorp</div>-->
+<!--                <div class="editable-field experience-date" contenteditable="false">Jan 2022 - Present · 2 yrs 3 mos</div>-->
+<!--                <div class="editable-field experience-description" contenteditable="false">-->
+<!--                  Leading design projects for enterprise clients, creating design systems, and mentoring junior designers. Responsible for the end-to-end design process from research to implementation.-->
+<!--                </div>-->
+<!--              </div>-->
+
+
+            </div>
+
+            <!-- Skills Tab -->
+            <div class="tab-pane fade" id="skills" role="tabpanel">
+              <div class="section-heading">
+                <span>Skills & Expertise</span>
+                <div class="btn_container">
+                  <button class="add-btn add" id="editSkillBtn">
+                    <i class="fas fa-pencil-alt me-2"></i> Edit Skill
+                  </button>
+                  <button class="add-btn add" id="addSkillItemBtn">
+                    <i class="fas fa-plus"></i> Add Skill
+                  </button>
+                  <button class="add-btn" id="saveSkillBtn">
+                    <i class="fas fa-save me-2"></i> Save
+                  </button>
+                  <button class="add-btn cancel" id="cancelSkillBtn">
+                    Cancel
+                  </button>
+                </div>
+
+              </div>
+
+              <h5 class="text-primary mt-4 mb-3"><i class="fas fa-pencil-alt me-2"></i> Design Skills</h5>
+              <div class="d-flex flex-wrap mt-2">
+                <span class="skill-badge editable" contenteditable="false"><i class="fas fa-pencil-alt me-1"></i> UI Design</span>
+                <span class="skill-badge editable" contenteditable="false"><i class="fas fa-user-circle me-1"></i> UX Research</span>
+                <span class="skill-badge editable" contenteditable="false"><i class="fas fa-mobile-alt me-1"></i> Mobile Design</span>
+                <span class="skill-badge editable" contenteditable="false"><i class="fas fa-object-group me-1"></i> Wireframing</span>
+                <span class="skill-badge editable" contenteditable="false"><i class="fas fa-palette me-1"></i> Visual Design</span>
+                <span class="skill-badge editable" contenteditable="false"><i class="fas fa-protocol me-1"></i> Prototyping</span>
+              </div>
+
+              <h5 class="text-primary mt-4 mb-3"><i class="fas fa-code me-2"></i> Technical Skills</h5>
+              <div class="d-flex flex-wrap mt-2">
+                <span class="skill-badge editable" contenteditable="false"><i class="fab fa-figma me-1"></i> Figma</span>
+                <span class="skill-badge editable" contenteditable="false"><i class="fab fa-adobe me-1"></i> Adobe XD</span>
+                <span class="skill-badge editable" contenteditable="false"><i class="fas fa-code me-1"></i> HTML/CSS</span>
+                <span class="skill-badge editable" contenteditable="false"><i class="fab fa-js me-1"></i> JavaScript</span>
+                <span class="skill-badge editable" contenteditable="false"><i class="fab fa-react me-1"></i> React</span>
+              </div>
+
+              <h5 class="text-primary mt-4 mb-3"><i class="fas fa-comments me-2"></i> Soft Skills</h5>
+              <div class="d-flex flex-wrap mt-2">
+                <span class="skill-badge editable" contenteditable="false"><i class="fas fa-comments me-1"></i> Communication</span>
+                <span class="skill-badge editable" contenteditable="false"><i class="fas fa-users me-1"></i> Team Collaboration</span>
+                <span class="skill-badge editable" contenteditable="false"><i class="fas fa-lightbulb me-1"></i> Problem Solving</span>
+                <span class="skill-badge editable" contenteditable="false"><i class="fas fa-tasks me-1"></i> Project Management</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="col-lg-4 col-xl-3">
+      <!-- Followed Companies Section -->
+      <div class="card-custom p-4 shadow-sm sticky-sidebar mb-4">
+        <h5 class="fw-bold mb-3">Followed Companies</h5>
+        <p class="text-muted small mb-3">Companies you're following</p>
+        <div id="followedCompaniesContainer" class="d-flex flex-column gap-3">
+          <!-- Followed companies cards will be appended here -->
+        </div>
+
+<!--        <div class="followed-company">-->
+<!--          <img src="https://logo.clearbit.com/google.com" alt="Google">-->
+<!--          <div class="followed-company-info">-->
+<!--            <h6 class="fw-bold mb-1">Google</h6>-->
+<!--            <small class="text-muted">Technology • 135K employees</small>-->
+<!--          </div>-->
+<!--          <button class="unfollow-btn" title="Unfollow">-->
+<!--            <i class="fas fa-times"></i>-->
+<!--          </button>-->
+<!--        </div>-->
+
+<!--        <div class="followed-company">-->
+<!--          <img src="https://logo.clearbit.com/microsoft.com" alt="Microsoft">-->
+<!--          <div class="followed-company-info">-->
+<!--            <h6 class="fw-bold mb-1">Microsoft</h6>-->
+<!--            <small class="text-muted">Software • 95K employees</small>-->
+<!--          </div>-->
+<!--          <button class="unfollow-btn" title="Unfollow">-->
+<!--            <i class="fas fa-times"></i>-->
+<!--          </button>-->
+<!--        </div>-->
+
+<!--        <div class="followed-company">-->
+<!--          <img src="https://logo.clearbit.com/apple.com" alt="Apple">-->
+<!--          <div class="followed-company-info">-->
+<!--            <h6 class="fw-bold mb-1">Apple</h6>-->
+<!--            <small class="text-muted">Technology • 85K employees</small>-->
+<!--          </div>-->
+<!--          <button class="unfollow-btn" title="Unfollow">-->
+<!--            <i class="fas fa-times"></i>-->
+<!--          </button>-->
+<!--        </div>-->
+
+<!--        <a href="#" class="view-all mt-3">View all followed companies <i class="fas fa-arrow-right ms-1"></i></a>-->
+      </div>
+    </aside>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('token');
+
+    if (!token || isTokenExpired(token)) {
+      // Token missing or expired → redirect to login
+      window.location.replace("login.html");
+      return;
+    }
+
+    // Token valid → load posts
+    getAllPost();
+  });
+  function isTokenExpired(token) {
+    const payload = parseJwt(token);
+    if (!payload || !payload.exp) return true;
+
+    const now = Math.floor(Date.now() / 1000); // current time in seconds
+    return payload.exp < now; // true if expired
+  }
+  function parseJwt(token) {
+    if (!token) return null;
+
+    try {
+      let base64Url = token.split('.')[1];
+      let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      let jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (err) {
+      console.error("Invalid token:", err);
+      return null;
+    }
+  }
+
+
+
+  const editBtn = document.getElementById("editBtn");
+  const actionButtons = document.getElementById("actionButtons");
+  const fields = document.querySelectorAll(".editable");
+
+  // Profile picture preview
+  document.getElementById("avatarUpload").addEventListener("change", function(e){
+    const file = e.target.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = event => document.getElementById("profileImage").src = event.target.result;
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Banner upload preview
+  document.getElementById("bannerUpload").addEventListener("change", function(e){
+    const file = e.target.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = event => document.getElementById("profileBanner").src = event.target.result;
+      reader.readAsDataURL(file);
+    }
+  });
+
+
+  let profileImageBase64 = '';
+  let bannerImageBase64 = '';
+  function previewAndUploadImage(event, type) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const previewId = type === 'avatar' ? 'avatarPreview' : 'bannerPreview';
+      const previewElem = document.getElementById(previewId);
+      if(previewElem) {
+        previewElem.innerHTML = `<img src="${e.target.result}" alt="${type}" style="width:100%;height:100%;object-fit:cover;" />`;
+      }
+
+      // Assign Base64 to the correct variable
+      if(type === 'avatar') {
+        profileImageBase64 = e.target.result;
+      } else {
+        bannerImageBase64 = e.target.result;
+      }
+
+      // console.log("Base64 ("+type+"):", e.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+
+console.log(profileImageBase64);
+
+
+  // Enable edit mode
+  editBtn.addEventListener("click", enableEditMode);
+
+  function enableEditMode(){
+    fields.forEach(f => f.setAttribute("contenteditable","true"));
+    actionButtons.innerHTML = `
+    <button class="btn btn-primary" id="saveBtn">Save</button>
+    <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+  `;
+    attachSaveCancel();
+  }
+
+  function attachSaveCancel(){
+    document.getElementById("saveBtn").addEventListener("click",()=>{
+
+      const token = localStorage.getItem('token')
+      const jwt = parseJwt(token)
+      console.log(jwt.sub)
+      console.log(profileImageBase64);
+
+      fetch(`http://localhost:8080/user/updateProfileDetails`, {
+        method:'POST',
+        headers:{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          "userName": jwt.sub,
+          "bannerImage":bannerImageBase64,
+          "profileImage":profileImageBase64,
+          "profileName":$("#profileName").text(),
+          "title":$("#profileTitle").text(),
+          "address":$("#profileLocation").text().trim()
+        })
+
+
+      }).then(res => res.json())
+              .then(response => {
+                console.log(response.data)
+              })
+
+
+
+      fields.forEach(f => f.setAttribute("contenteditable","false"));
+      actionButtons.innerHTML = `<button class="btn btn-primary" id="editBtn"><i class="fas fa-pencil-alt"></i> Edit</button>`;
+      document.getElementById("editBtn").addEventListener("click", enableEditMode);
+
+    });
+
+    document.getElementById("cancelBtn").addEventListener("click",()=>{
+      fields.forEach(f => f.setAttribute("contenteditable","false"));
+      actionButtons.innerHTML = `<button class="btn btn-primary" id="editBtn"><i class="fas fa-pencil-alt"></i> Edit</button>`;
+      document.getElementById("editBtn").addEventListener("click", enableEditMode);
+    });
+  }
+
+
+</script>
+
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<script>
+  document.addEventListener("DOMContentLoaded", () =>{
+
+    setProfile()
+    setFollowingList()
+
+  });
+
+  function setProfile() {
+
+    const token = localStorage.getItem('token')
+    fetch(`http://localhost:8080/user/getUserProfile`, {
+      method:'GET',
+      headers:{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+    }).then(res => res.json())
+            .then(response => {
+              const user =  response.data
+
+              $("#profileBanner").attr("src", user.bannerImage);
+              $("#profileImage").attr("src", user.profileImage);
+              $("#profileName").text( user.profileName);
+              $("#profileTagline").text(user.title);
+              $("#profileLocation").text(user.address);
+              $("#aboutText").text(user.about);
+              eduData(user.education)
+              setContact(user.contact)
+              setExperience(user.experience)
+
+
+            })
+
+  }
+function eduData(edu) {
+  // 1. Split by space + key:
+  const parts = edu.split(/ (?=\w+:)/);
+  // => ["name:BSc in Computer Science", "place:University of Colombo", "year:2015 - 2019"]
+
+  let result = {};
+  parts.forEach(part => {
+    const [key, ...value] = part.split(":");
+    result[key] = value.join(":").trim(); // handle ':' inside values
+  });
+
+  console.log(result);
+  $("#eduName").text(result.name);
+  $("#eduPlace").text(result.place);
+  $("#eduYear").text(result.year);
+
+}
+
+function setContact(con) {
+// 1. Split by space + key:
+  const parts = con.split(/ (?=\w+:)/);
+// ["email: thamidu@example.com", "phone: +94 77 123 4567", "portfolio: thamiduportfolio.com"]
+
+  let result = {};
+  parts.forEach(part => {
+    const [key, ...value] = part.split(":");
+    result[key] = value.join(":").trim();
+  });
+
+  console.log(result);
+  $("#conEmail").html(`<i class="fas fa-envelope me-2 text-primary"></i>` +result.email);
+  $("#conPhone").html(`<i class="fas fa-phone me-2 text-primary"></i>`+result.phone);
+  $("#conPort").html(`<i class="fas fa-link me-2 text-primary"></i> `+result.portfolio);
+}
+function setExperience(exp) {
+  const data = JSON.parse(exp);
+  console.log(data);
+    data.forEach(d  => {
+      console.log("dddddddddd"+d)
+
+
+      const newExp = document.createElement("div");
+      newExp.className = "experience-item editable new-item"; // mark new items
+      newExp.innerHTML = `
+    <div class="d-flex justify-content-between align-items-start">
+      <div class="editable-field experience-title" contenteditable="true">${d.title }</div>
+      <span class="badge bg-secondary">Current</span>
+    </div>
+    <div class="editable-field experience-company" contenteditable="true">${d.company}</div>
+    <div class="editable-field experience-date" contenteditable="true">${d.date}</div>
+    <div class="editable-field experience-description" contenteditable="true">${d.description}</div>
+  `;
+      document.getElementById("experience").appendChild(newExp);
+
+
+    })
+
+
+}
+
+
+  let followedCompanies =[]
+function setFollowingList() {
+  const token = localStorage.getItem('token')
+  fetch(`http://localhost:8080/user/getFollowingList`, {
+    method:'GET',
+    headers:{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+  }).then(res => res.json())
+          .then(response => {
+             followedCompanies =  response.data
+            console.log(followedCompanies)
+            renderFollowedCompanies(followedCompanies)
+
+          })
+
+}
+
+  // Example data from backend API
+  // const followedCompanies = [
+  //   {
+  //     id: 1,
+  //     companyName: "Google",
+  //     industry: "Technology",
+  //     employees: "135K employees",
+  //     profileImagePath: "https://logo.clearbit.com/google.com"
+  //   },
+  //   {
+  //     id: 2,
+  //     companyName: "Apple",
+  //     industry: "Technology",
+  //     employees: "154K employees",
+  //     profileImagePath: "https://logo.clearbit.com/apple.com"
+  //   }
+  // ];
+
+  // Function to render followed companies
+  function renderFollowedCompanies(companies) {
+    const container = document.getElementById("followedCompaniesContainer");
+    container.innerHTML = ""; // clear previous content
+
+    companies.forEach(company => {
+      const card = document.createElement("div");
+      card.classList.add("followed-company", "d-flex", "align-items-center", "p-2", "border", "rounded");
+
+      card.innerHTML = `
+            <img src="${company.profileImagePath}" alt="${company.companyName}" class="rounded-circle me-3" width="50" height="50">
+            <div class="followed-company-info flex-grow-1">
+                <h6 class="fw-bold mb-1">${company.companyName}</h6>
+                <small class="text-muted">${company.industry} • ${company.employees}</small>
+            </div>
+            <button class="unfollow-btn btn btn-sm btn-outline-danger" title="Unfollow" data-id="${company.id}">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+
+      // Add event listener for unfollow
+      card.querySelector(".unfollow-btn").addEventListener("click", (e) => {
+        const companyId = e.currentTarget.getAttribute("data-id");
+        console.log("Unfollow clicked for company ID:", company.id);
+
+
+        const token = localStorage.getItem('token')
+        fetch(`http://localhost:8080/user/unfollow?id=${company.id}`, {
+          method:'DELETE',
+          headers:{
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(res => res.json())
+                .then(response => {
+                  console.log(response.data);
+                  if(response.data){
+                    card.remove();
+                    Swal.fire({toast:true,position:"top-end",showConfirmButton:false,timer:3000,timerProgressBar:true,icon:"success",title:"Unfollowing"});
+
+                  } else {
+                    Swal.fire({toast:true,position:"top-end",showConfirmButton:false,timer:3000,timerProgressBar:true,icon:"error",title:"Failed to Unfollow"});
+                  }
+                })
+
+        // Call backend API to unfollow here
+        // After success, remove card from DOM
+
+      });
+
+      container.appendChild(card);
+    });
+  }
+
+  // Call function with example data
+  renderFollowedCompanies(followedCompanies);
+
+
+
+  // ✅ Activate Bootstrap tabs
+  document.querySelectorAll('#profileTabs button').forEach(triggerEl => {
+    new bootstrap.Tab(triggerEl)
+  });
+
+  // ✅ Unfollow button functionality
+  // document.querySelectorAll('.unfollow-btn').forEach(button => {
+  //   button.addEventListener('click', function (e) {
+  //     e.stopPropagation();
+  //     const companyElement = this.closest('.followed-company');
+  //     const companyName = companyElement.querySelector('h6').textContent;
+  //
+  //
+  //   });
+  // });
+
+  // -----------------------------
+  // ✅ ABOUT TAB
+  // -----------------------------
+  const aboutFields = "#about .editable-field";
+  document.getElementById("editAboutBtn").addEventListener("click", () => enableFields(aboutFields));
+  document.getElementById("saveAboutBtn").addEventListener("click", () => {
+    const token = localStorage.getItem('token')
+    const jwt = parseJwt(token)
+    fetch(`http://localhost:8080/user/updateProfileAbout`, {
+      method:'POST',
+      headers:{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        "userName": jwt.sub,
+        "about":$("#aboutText").text(),
+        "education":"name:"+$("#eduName").text()+" place:"+$("#eduPlace").text()+" year:"+$("#eduYear").text(),
+        "contact":"email:"+$("#conEmail").text()+" phone:"+$("#conPhone").text()+" portfolio:"+$("#conPort").text(),
+      })
+    }).then(res => res.json())
+            .then(response => {
+              if(response.data === "saved successfully"){
+                disableFields(aboutFields);
+                showToast("About section saved successfully!");
+              }
+              if (response.data === "updated successfully"){
+                disableFields(aboutFields);
+                showToast("About section update successfully!");
+              }
+              if (response.data === "user"){
+                disableFields(aboutFields);
+                showToast("Can't find User!");
+              }
+              disableFields(aboutFields);
+              showToast("Can't save!");
+              console.log(response.data)
+            })
+
+
+
+
+
+  });
+  document.getElementById("cancelAboutBtn").addEventListener("click", () => disableFields(aboutFields));
+
+  // -----------------------------
+  // ✅ EXPERIENCE TAB
+  // -----------------------------
+  const expFields = "#experience .editable-field";
+  let newExperienceItems = []; // 🆕 track new experiences
+
+  document.getElementById("editExperienceBtn").addEventListener("click", () => enableFields(expFields));
+
+  document.getElementById("addExperienceItemBtn").addEventListener("click", () => {
+    const newExp = document.createElement("div");
+    newExp.className = "experience-item editable new-item"; // mark new items
+    newExp.innerHTML = `
+    <div class="d-flex justify-content-between align-items-start">
+      <div class="editable-field experience-title" contenteditable="true">New Position</div>
+      <span class="badge bg-secondary">Current</span>
+    </div>
+    <div class="editable-field experience-company" contenteditable="true">Company Name</div>
+    <div class="editable-field experience-date" contenteditable="true">Start Date - End Date</div>
+    <div class="editable-field experience-description" contenteditable="true">Description of your role and responsibilities.</div>
+  `;
+    document.getElementById("experience").appendChild(newExp);
+    newExperienceItems.push(newExp); // track new item
+  });
+
+  document.getElementById("saveExperienceBtn").addEventListener("click", () => {
+    const allExperienceData = getExperienceData();
+    console.log(allExperienceData);
+    const token = localStorage.getItem('token')
+    const jwt = parseJwt(token)
+    const experienceString = JSON.stringify(allExperienceData);
+    fetch(`http://localhost:8080/user/updateProfileExperience`, {
+      method:'POST',
+      headers:{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        "userName": jwt.sub,
+        "experience": experienceString
+      })
+    }).then(res => res.json())
+            .then(response => {
+              if(response.data === "saved successfully"){
+                disableFields(expFields);
+                newExperienceItems = []; // clear tracking since saved
+                showToast("Experience section saved successfully!");
+              }
+              if (response.data === "updated successfully"){
+                disableFields(expFields);
+                newExperienceItems = []; // clear tracking since saved
+                showToast("Experience section update successfully!");
+              }
+              if (response.data === "user"){
+                disableFields(expFields);
+                newExperienceItems = []; // clear tracking since saved
+                showToast("Can't find User!");
+              }
+              disableFields(expFields);
+              newExperienceItems = []; // clear tracking since saved
+              showToast("Can't save!");
+              console.log(response.data)
+            })
+
+  });
+
+  document.getElementById("cancelExperienceBtn").addEventListener("click", () => {
+    disableFields(expFields);
+    // remove unsaved new items
+    newExperienceItems.forEach(item => item.remove());
+    newExperienceItems = [];
+  });
+
+
+  function getExperienceData() {
+    const experienceItems = document.querySelectorAll(".experience-item");
+    let experiences = [];
+
+    experienceItems.forEach(item => {
+      const title = item.querySelector(".experience-title")?.innerText.trim() || "";
+      const company = item.querySelector(".experience-company")?.innerText.trim() || "";
+      const date = item.querySelector(".experience-date")?.innerText.trim() || "";
+      const description = item.querySelector(".experience-description")?.innerText.trim() || "";
+
+      experiences.push({
+        title,
+        company,
+        date,
+        description
+      });
+    });
+
+    return experiences;
+  }
+
+
+
+
+  // -----------------------------
+  // ✅ SKILLS TAB
+  // -----------------------------
+  const skillFields = "#skills .editable-field, #skills .skill-badge";
+  let newSkillItems = []; // 🆕 track new skills
+
+  document.getElementById("editSkillBtn").addEventListener("click", () => enableFields(skillFields));
+
+  document.getElementById("addSkillItemBtn").addEventListener("click", () => {
+    const newSkill = document.createElement("span");
+    newSkill.className = "skill-badge editable-field new-item";
+    newSkill.contentEditable = "true";
+    newSkill.textContent = "New Skill";
+    document.querySelector("#skills .d-flex.flex-wrap").appendChild(newSkill);
+    newSkill.focus();
+    newSkillItems.push(newSkill); // track new skill
+  });
+
+  document.getElementById("saveSkillBtn").addEventListener("click", () => {
+    disableFields(skillFields);
+    newSkillItems = []; // clear tracking since saved
+    showToast("Skills saved successfully!");
+  });
+
+  document.getElementById("cancelSkillBtn").addEventListener("click", () => {
+    disableFields(skillFields);
+    // remove unsaved new items
+    newSkillItems.forEach(item => item.remove());
+    newSkillItems = [];
+  });
+
+  // -----------------------------
+  // ✅ Helper Functions
+  // -----------------------------
+  function enableFields(selector) {
+    document.querySelectorAll(selector).forEach(field => {
+      field.setAttribute("contenteditable", "true");
+      field.style.minHeight = "1.5em";
+      field.style.border = "1px dashed #2b7cff";
+      field.style.backgroundColor = "#f8fbff";
+    });
+  }
+  function disableFields(selector) {
+    document.querySelectorAll(selector).forEach(field => {
+      field.setAttribute("contenteditable", "false");
+      field.style.border = "1px solid transparent";
+      field.style.backgroundColor = "transparent";
+    });
+  }
+  function showToast(message) {
+    const toast = document.createElement("div");
+    toast.className = "position-fixed bottom-0 end-0 m-3 p-3 bg-success text-white rounded shadow";
+    toast.innerHTML = `<i class="fas fa-check-circle me-2"></i> ${message}`;
+    toast.style.zIndex = "1050";
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+</script>
+
+
+</body>
+</html>

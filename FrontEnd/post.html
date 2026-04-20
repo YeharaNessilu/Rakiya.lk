@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Posts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+    <link rel="stylesheet" href="css/postCss.css">
+    <style>
+        /*h1 { text-align:center; color:#333; margin-bottom:20px; }*/
+        .form-section { margin-bottom:25px; }
+        /*.form-section h3 { color:#4CAF50; margin-bottom:10px; display:flex; align-items:center; gap:8px; }*/
+        .form-section textarea { width:100%; border-radius:8px; border:1px solid #ccc; padding:10px; font-size:14px; resize:none; }
+        .openMap { background:#4CAF50; color:#fff; border:none; padding:8px 16px; font-size:14px; border-radius:6px; cursor:pointer; transition:0.3s; }
+        .form-section button:hover { opacity:0.9; }
+
+        /* Modal Styles */
+        .modal { display: none; position: fixed; z-index: 1000; left:0; top:0; width:100%; height:100%; background-color: rgba(0,0,0,0.6); animation: fadeInBg 0.3s ease; }
+        @keyframes fadeInBg { from{opacity:0;} to{opacity:1;} }
+        .modal-content { background:#fff; margin:5% auto; padding:15px; width:90%; max-width:1200px; max-height:100vh; overflow-y:auto; border-radius:12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: scaleIn 0.3s ease; position:relative; }
+        @keyframes scaleIn { from{transform:scale(0.95); opacity:0;} to{transform:scale(1); opacity:1;} }
+
+        .close { position:absolute; top:2px; right:20px; font-size:35px; font-weight:bold; cursor:pointer; color:#333; transition:0.3s; }
+        .close:hover { color:#f44336; }
+
+        #map { height: 65vh; width: 100%; border-radius:10px; border:1px solid #ccc; margin-bottom:15px; }
+
+        #controls { text-align:center; margin-top:10px; display:flex; justify-content:center; gap:12px; }
+        #controls button { padding:8px 16px; font-size:14px; border-radius:6px; cursor:pointer; font-weight:500; transition:0.3s; }
+        #setLocationBtn { background:#4CAF50; color:#fff; border:none; }
+        #setLocationBtn:hover { opacity:0.9; }
+        #clearBtn { background:#f44336; color:#fff; border:none; }
+        #clearBtn:hover { opacity:0.9; }
+
+        /* Popup marker custom style */
+        .leaflet-popup-content-wrapper { border-radius:8px; border:1px solid #4CAF50; }
+        .leaflet-popup-content { font-size:14px; line-height:1.4; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-users"></i>
+                <span>WorkHub</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="preview-container" id="previewContainer"></div>
+</div>
+<div id="locationModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>Select Locations</h3>
+        <div id="map"></div>
+
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+    let jobs = [];
+    document.addEventListener("DOMContentLoaded", () => {
+        const token = localStorage.getItem("token")
+        fetch("http://localhost:8080/company/getCompanyPost", {
+            method: 'Get',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+
+        }).then(res => res.json())
+            .then(response => {
+                jobs = response.data; // data object එක
+
+                jobs.forEach(job => {
+                    getProfile(job.username, job)
+
+                });
+
+
+                // console.log(jobs);    // Software Development
+            });
+    });
+
+
+
+    function getProfile(userID, job) {
+        const token = localStorage.getItem("token")
+        fetch("http://localhost:8080/company/profile?userID="+userID, {
+            method: 'Get',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+
+        }).then(res => res.json())
+            .then(response => {
+                const profile =  response.data; // data object එක
+                // setData(jobs);
+                console.log(profile.companyName)
+                console.log(profile.profileImage)
+                console.log("3")
+
+                setData(job, profile.companyName, profile.profileImage)
+
+                // console.log(jobs);    // Software Development
+            });
+
+    }
+
+
+    function setData(job, profileName, profileImage) {
+
+
+
+        const container = document.getElementById("previewContainer");
+
+        // jobs.forEach(job => {
+            console.log("1")
+            console.log("2")
+            // let name = profile.companyName
+
+            console.log(job);
+            const card = document.createElement("div");
+            card.classList.add("post-card");
+
+            card.innerHTML = `
+            <div class="post-header">
+                    <img class="company-logo" src=${profileImage || "/default-logo.png"} alt="Company Logo"/>
+                <div class="post-meta">
+                    <h3>${profileName}</h3>
+                    <div class="post-date">
+                        <i class="far fa-clock"></i> <span>${formatDateTime(job.createdAt)}</span>
+                    </div>
+                </div>
+                <div class="post-menu" id="delete${job.id}" style="position: relative; cursor: pointer;">
+    <i class="fas fa-ellipsis-h"></i>
+    <div class="dropdown-menu" id="dropdown${job.id}" style="display:none; position:absolute; top:20px; right:0; background:white; border:1px solid #ccc; border-radius:5px; z-index:10;">
+        <div class="dropdown-item" id="deletePost${job.id}" style="padding:5px 10px; cursor:pointer;">Delete</div>
+    </div>
+</div>
+
+            </div>
+
+            <div class="post-content">
+                <div class="job-caption">
+                    <span class="caption-item"><i class="fas fa-map-marker-alt"></i> ${job.address}</span>
+                    <span class="caption-item"><i class="fas fa-briefcase"></i> ${job.experienceRequired}</span>
+                    <span class="caption-item"><i class="fas fa-dollar-sign"></i> ${job.salaryRange}</span>
+                    <span class="caption-item"><i class="fas fa-tools"></i> ${job.skills}</span>
+                    <span class="caption-item"><i class="fas fa-clock"></i> ${job.jobType}</span>
+                </div>
+
+                <p class="post-text">${job.jobDescription}</p>
+
+                <img src="${job.jobImagePath}" alt="Job Image" class="post-image">
+            </div>
+
+            <div class="post-actions">
+                <div class="post-action">
+                    <i class="far fa-comments"></i> Chat
+                </div>
+                <div class="post-action">
+                        <textarea  hidden readonly id="jobLocations-${job.id}"> ${job.location}</textarea>
+                        <button type="button" class="openMap" onclick="openModal(document.getElementById('jobLocations-${job.id}').value)" >
+                        <i class="fas fa-map-marker-alt" id="location"></i> see location
+                    </button>
+
+                </div>
+            </div>
+        `;
+
+            container.appendChild(card);
+
+        document.addEventListener("click", (e) => {
+
+
+            if (e.target.id.startsWith("deletePost")) {
+                const jobId = e.target.id.replace("deletePost", "");
+                console.log("Delete job with ID:", jobId);
+
+                function deleteTis() {
+                    // Example: call API to delete
+                    const token = localStorage.getItem("token");
+                    fetch(`http://localhost:8080/company/deletePost?postId=${jobId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': 'Bearer ' + token
+                        }
+                    }).then(res => res.json())
+                        .then(response => {
+                            const isDelete =  response.data; // data object එක
+                            console.log(isDelete.valueOf());
+                            if (isDelete){
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: "top-end",
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    didOpen: (toast) => {
+                                        toast.onmouseenter = Swal.stopTimer;
+                                        toast.onmouseleave = Swal.resumeTimer;
+                                    }
+                                });
+                                Toast.fire({
+                                    icon: "success",
+                                    title: "Delete successfully"
+                                });
+                                document.getElementById(`delete${jobId}`).closest(".post-card").remove();
+
+                                return;
+                            }
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: "top-end",
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true,
+                                didOpen: (toast) => {
+                                    toast.onmouseenter = Swal.stopTimer;
+                                    toast.onmouseleave = Swal.resumeTimer;
+                                }
+                            });
+                            Toast.fire({
+                                icon: "error",
+                                title: "Delete unsuccessfully"
+                            });
+
+                            // console.log(jobs);    // Software Development
+                        });
+                }
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: "Deleted!",
+                            text: "Your file has been deleted.",
+                            icon: "success"
+                        });
+                        deleteTis()
+                    }
+                });
+
+            }
+        });
+
+    }
+    function formatDateTime(timestamp) {
+        const date = new Date(timestamp);
+
+        return date.toLocaleString("en-GB", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+            timeZone: "Asia/Colombo"  // 🔹 Force SL time zone
+        });
+    }
+
+    console.log(formatDateTime("2025-09-14T08:56:33.942+05:30"));
+
+
+    document.addEventListener("click", (e) => {
+        // Check if clicked on the post-menu icon
+        if (e.target.closest(".post-menu")) {
+            const menu = e.target.closest(".post-menu");
+            const jobId = menu.id.replace("delete", "");
+            const dropdown = document.getElementById(`dropdown${jobId}`);
+
+            // Toggle display
+            if (dropdown.style.display === "none") {
+                dropdown.style.display = "block";
+            } else {
+                dropdown.style.display = "none";
+            }
+        } else {
+            // Clicked outside → hide all dropdowns
+            document.querySelectorAll(".dropdown-menu").forEach(d => d.style.display = "none");
+        }
+    });
+
+
+
+
+
+
+</script>
+
+
+<script>
+
+    // Select all see location buttons
+    document.querySelectorAll(".openMapBtn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            openModal();
+        });
+    });
+
+    // Open modal function
+    var map = L.map('map').setView([7.8731, 80.7718], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution:'© OpenStreetMap contributors'
+    }).addTo(map);
+
+    var markers = [];
+    var selectedLocations = [];
+    selectedLocations.push({
+        name: "Default Location",
+        lat: 7.8731,
+        lng: 80.7718
+    });
+
+    // Geocoder Search
+    // var geocoder = L.Control.geocoder({ defaultMarkGeocode: false })
+    //     .on('markgeocode', function(e) {
+    //         var center = e.geocode.center;
+    //         var name = e.geocode.name;
+    //         selectedLocations.push({name:name, lat:center.lat, lng:center.lng});
+    //         openModal();
+    //         map.setView(center, 12);
+    //     }).addTo(map);
+    //
+    // // Manual click select
+    // map.on('click', function(e){
+    //     selectedLocations.push({name:"Manual Selected", lat:e.latlng.lat, lng:e.latlng.lng});
+    //     openModal();
+    // });
+
+    // Modal open/close
+    function openModal(locationText) {
+        document.getElementById("locationModal").style.display = "block";
+        document.body.style.overflow = "hidden";
+
+        setTimeout(()=> {
+            map.invalidateSize();
+
+            // Clear old markers
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+            selectedLocations = [];
+
+            if(locationText) {
+                // 🟢 Split by lines (1., 2., etc.)
+                let lines = locationText.split("\n");
+
+                lines.forEach(line => {
+                    // Find coordinates inside ()
+                    let match = line.match(/\(([-\d.]+),\s*([-\d.]+)\)/);
+                    if(match){
+                        let lat = parseFloat(match[1]);
+                        let lng = parseFloat(match[2]);
+
+                        // Name = line without coordinates
+                        let name = line.replace(/\(.*\)/, "").trim();
+
+                        selectedLocations.push({name, lat, lng});
+                    }
+                });
+            }
+
+            // Render all selected markers
+            selectedLocations.forEach(loc=>{
+                var marker = L.marker([loc.lat, loc.lng]).addTo(map)
+                    .bindPopup(loc.name + "<br>("+loc.lat.toFixed(4)+", "+loc.lng.toFixed(4)+")")
+                    .openPopup();
+                markers.push(marker);
+            });
+
+            // Fit map bounds to markers
+            if(markers.length>0){
+                var group = new L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.2));
+            }
+
+        }, 300);
+    }
+
+
+    function closeModal() {
+        document.getElementById("locationModal").style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+
+
+</script>
+
+</body>
+</html>

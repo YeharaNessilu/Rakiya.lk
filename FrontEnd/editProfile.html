@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/editProfileCss.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+  <style>
+    /*h1 { text-align:center; color:#333; margin-bottom:20px; }*/
+    .form-section { margin-bottom:25px; }
+    /*.form-section h3 { color:#4CAF50; margin-bottom:10px; display:flex; align-items:center; gap:8px; }*/
+    .form-section textarea { width:100%; border-radius:8px; border:1px solid #ccc; padding:10px; font-size:14px; resize:none; }
+    .openMap { background:#4CAF50; color:#fff; border:none; padding:8px 16px; font-size:14px; border-radius:6px; cursor:pointer; transition:0.3s; }
+    .form-section button:hover { opacity:0.9; }
+
+    /* Modal Styles */
+    .modal { display: none; position: fixed; z-index: 1000; left:0; top:0; width:100%; height:100%; background-color: rgba(0,0,0,0.6); animation: fadeInBg 0.3s ease; }
+    @keyframes fadeInBg { from{opacity:0;} to{opacity:1;} }
+    .modal-content { background:#fff; margin:5% auto; padding:15px; width:90%; max-width:1200px; max-height:100vh; overflow-y:auto; border-radius:12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: scaleIn 0.3s ease; position:relative; }
+    @keyframes scaleIn { from{transform:scale(0.95); opacity:0;} to{transform:scale(1); opacity:1;} }
+
+    .close { position:absolute; top:15px; right:20px; font-size:24px; font-weight:bold; cursor:pointer; color:#333; transition:0.3s; }
+    .close:hover { color:#f44336; }
+
+    #map { height: 65vh; width: 100%; border-radius:10px; border:1px solid #ccc; margin-bottom:15px; }
+
+    #controls { text-align:center; margin-top:10px; display:flex; justify-content:center; gap:12px; }
+    #controls button { padding:8px 16px; font-size:14px; border-radius:6px; cursor:pointer; font-weight:500; transition:0.3s; }
+    #setLocationBtn { background:#4CAF50; color:#fff; border:none; }
+    #setLocationBtn:hover { opacity:0.9; }
+    #clearBtn { background:#f44336; color:#fff; border:none; }
+    #clearBtn:hover { opacity:0.9; }
+
+    /* Popup marker custom style */
+    .leaflet-popup-content-wrapper { border-radius:8px; border:1px solid #4CAF50; }
+    .leaflet-popup-content { font-size:14px; line-height:1.4; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        <i class="fas fa-user-edit"></i>
+        <span>WorkHub - Edit Profile</span>
+      </div>
+    </div>
+  </header>
+
+  <h1 class="page-title">Update Your Profile Information</h1>
+  <p class="page-description">Edit your profile details and about section information. Changes will be reflected in real-time in the preview below.</p>
+
+  <!-- Form Container -->
+  <div class="form-container">
+    <form id="profileForm">
+      <!-- Profile Image Section -->
+      <div class="form-section">
+        <h3 class="section-title"><i class="fas fa-user-circle"></i> Profile Image</h3>
+
+        <div class="avatar-upload">
+          <div class="avatar-preview" id="avatarPreview"></div>
+          <div>
+            <input type="file" id="avatarUpload" accept="image/*" style="display: none;" onchange="previewAndUploadImage(event, 'avatar')">
+            <button id="uploadProfilePhoto" type="button" class="upload-btn" onclick="document.getElementById('avatarUpload').click()">
+              <i class="fas fa-upload"></i> Upload New Avatar
+            </button>
+            <p style="color: #718096; font-size: 14px; margin-top: 8px;">Recommended: 300x300 pixels, JPG or PNG</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner Image Section -->
+      <div class="form-section">
+        <h3 class="section-title"><i class="fas fa-image"></i> Banner Image</h3>
+
+        <div class="banner-upload">
+          <input type="file" id="bannerUpload" accept="image/*" style="display: none;"onchange="previewAndUploadImage(event, 'banner')">
+          <button id="uploadBannerImage" type="button" class="upload-btn" onclick="document.getElementById('bannerUpload').click()">
+            <i class="fas fa-upload"></i> Upload Banner Image
+          </button>
+          <p style="color: #718096; font-size: 14px; margin-top: 8px;">Recommended: 1200x400 pixels, JPG or PNG</p>
+
+          <div class="banner-preview" id="bannerPreview">
+            <div class="banner-actions">
+              <button type="button" class="banner-btn" title="Change Banner">
+                <i class="fas fa-camera"></i>
+              </button>
+              <button type="button" class="banner-btn" title="Remove Banner">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <h3 class="section-title"><i class="fas fa-info-circle"></i> Basic Information</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Company Name</label>
+            <input type="text" class="form-input" id="companyName" value="TechCorp International" placeholder="Enter company name">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tagline</label>
+            <input type="text" class="form-input" id="companyTagline" value="Technology & Software Development" placeholder="Enter company tagline">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Industry</label>
+            <input type="text" class="form-input" id="companyIndustry" value="Software Development" placeholder="Enter industry">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Followers Count</label>
+            <input type="text" class="form-input" id="followersCount" value="2.1K followers" placeholder="Enter followers count">
+          </div>
+        </div>
+      </div>
+
+      <!-- About Section -->
+      <div class="form-section">
+        <h3 class="section-title"><i class="fas fa-building"></i> Company Overview</h3>
+
+        <div class="form-group">
+          <label class="form-label">Overview Description</label>
+          <textarea class="form-textarea" id="companyOverview" placeholder="Enter company overview">TechCorp International was founded in 2010 with a mission to revolutionize the tech industry. Today, we serve clients in over 30 countries with our innovative software solutions and consulting services.</textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title"><i class="fas fa-bullseye"></i> Mission Statement</h3>
+
+        <div class="form-group">
+          <label class="form-label">Mission Description</label>
+          <textarea class="form-textarea" id="companyMission" placeholder="Enter company mission">Our mission is to empower businesses through technology, providing them with the tools they need to succeed in a digital world. We believe in innovation, quality, and customer satisfaction.</textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title"><i class="fas fa-eye"></i> Vision Statement</h3>
+
+        <div class="form-group">
+          <label class="form-label">Vision Description</label>
+          <textarea class="form-textarea" id="companyVision" placeholder="Enter company vision">To be the global leader in transformative technology solutions, driving progress and innovation across industries while maintaining our commitment to ethical practices and social responsibility.</textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title"><i class="fas fa-map-marker-alt"></i> Locations</h3>
+        <textarea id="companyLocations" class="form-textarea" placeholder="Enter company locations" rows="4"></textarea>
+        <br>
+        <button type="button" class="openMap" onclick="openModal()">Select Locations on Map</button>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button id="saveBtn" type="button" class="submit-btn">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+        <button id="cancelBtn" type="button" class="cancel-btn">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>
+<div id="locationModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3>Select Locations</h3>
+    <div id="map"></div>
+    <div id="controls">
+      <button id="setLocationBtn">Set Locations</button>
+      <button id="clearBtn">Clear Locations</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="js/EditProfileJs.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('token');
+
+    if (!token || isTokenExpired(token)) {
+      // Token missing or expired → redirect to login
+      window.location.replace("login.html");
+      return;
+    }
+
+    // Token valid → load posts
+    getAllPost();
+  });
+  function isTokenExpired(token) {
+    const payload = parseJwt(token);
+    if (!payload || !payload.exp) return true;
+
+    const now = Math.floor(Date.now() / 1000); // current time in seconds
+    return payload.exp < now; // true if expired
+  }
+  function parseJwt(token) {
+    if (!token) return null;
+
+    try {
+      let base64Url = token.split('.')[1];
+      let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      let jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (err) {
+      console.error("Invalid token:", err);
+      return null;
+    }
+  }
+
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Form input listeners for live preview
+    const formInputs = document.querySelectorAll('.form-input, .form-textarea');
+    formInputs.forEach(input => {
+      input.addEventListener('input', updatePreview);
+    });
+// Avatar upload preview
+    const avatarUpload = document.getElementById('avatarUpload');
+    avatarUpload.addEventListener('change', function(e) {
+      if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const avatarPreview = document.getElementById('avatarPreview');
+          avatarPreview.innerHTML = '';
+          avatarPreview.style.backgroundImage = `url(${e.target.result})`;
+          avatarPreview.style.backgroundSize = 'cover';
+          avatarPreview.style.backgroundPosition = 'center';
+        }
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+
+// Banner upload preview
+    const bannerUpload = document.getElementById('bannerUpload');
+    bannerUpload.addEventListener('change', function(e) {
+      if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const bannerPreview = document.getElementById('bannerPreview');
+          bannerPreview.innerHTML = '';
+          bannerPreview.style.backgroundImage = `url(${e.target.result})`;
+          bannerPreview.style.backgroundSize = 'cover';
+          bannerPreview.style.backgroundPosition = 'center';
+        }
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+
+    // // Avatar upload preview
+    // const avatarUpload = document.getElementById('avatarUpload');
+    // avatarUpload.addEventListener('change', function(e) {
+    //   if (e.target.files && e.target.files[0]) {
+    //     const reader = new FileReader();
+    //     reader.onload = function(e) {
+    //       document.getElementById('avatarPreview').innerHTML = '';
+    //       document.getElementById('avatarPreview').style.backgroundImage = `url(${e.target.result})`;
+    //       document.getElementById('avatarPreview').style.backgroundSize = 'cover';
+    //       document.getElementById('avatarPreview').style.backgroundPosition = 'center';
+    //
+    //       document.getElementById('previewAvatar').innerHTML = '';
+    //       document.getElementById('previewAvatar').style.backgroundImage = `url(${e.target.result})`;
+    //       document.getElementById('previewAvatar').style.backgroundSize = 'cover';
+    //       document.getElementById('previewAvatar').style.backgroundPosition = 'center';
+    //     }
+    //     reader.readAsDataURL(e.target.files[0]);
+    //   }
+    // });
+    //
+    // // Banner upload preview
+    // const bannerUpload = document.getElementById('bannerUpload');
+    // bannerUpload.addEventListener('change', function(e) {
+    //   if (e.target.files && e.target.files[0]) {
+    //     const reader = new FileReader();
+    //     reader.onload = function(e) {
+    //       document.getElementById('bannerPreview').innerHTML = '';
+    //       document.getElementById('bannerPreview').style.backgroundImage = `url(${e.target.result})`;
+    //       document.getElementById('bannerPreview').style.backgroundSize = 'cover';
+    //       document.getElementById('bannerPreview').style.backgroundPosition = 'center';
+    //
+    //       document.getElementById('previewBanner').innerHTML = '';
+    //       document.getElementById('previewBanner').style.backgroundImage = `url(${e.target.result})`;
+    //       document.getElementById('previewBanner').style.backgroundSize = 'cover';
+    //       document.getElementById('previewBanner').style.backgroundPosition = 'center';
+    //     }
+    //     reader.readAsDataURL(e.target.files[0]);
+    //   }
+    // });
+
+    function updatePreview() {
+      // Basic info
+      document.getElementById('previewCompanyName').textContent = document.getElementById('companyName').value;
+      document.getElementById('previewTagline').textContent = document.getElementById('companyTagline').value;
+      document.getElementById('previewFollowers').textContent = document.getElementById('followersCount').value;
+
+      // About section
+      document.getElementById('previewOverview').textContent = document.getElementById('companyOverview').value;
+      document.getElementById('previewMission').textContent = document.getElementById('companyMission').value;
+      document.getElementById('previewVision').textContent = document.getElementById('companyVision').value;
+      document.getElementById('previewLocations').textContent = document.getElementById('companyLocations').value;
+
+      // Update avatar initials if no image
+      if (!document.getElementById('avatarPreview').style.backgroundImage ||
+              document.getElementById('avatarPreview').style.backgroundImage === 'none') {
+        const companyName = document.getElementById('companyName').value;
+        if (companyName) {
+          const initials = companyName.split(' ').map(word => word[0]).join('').toUpperCase();
+          document.getElementById('avatarPreview').innerHTML = initials.substring(0, 2);
+          document.getElementById('previewAvatar').innerHTML = initials.substring(0, 2);
+        }
+      }
+    }
+
+    // Form submission
+    // const profileForm = document.getElementById('profileForm');
+    //
+    // profileForm.addEventListener('submit', function(e) {
+    //   e.preventDefault();
+    //   alert('Profile updated successfully!');
+    //   // In a real application, you would send the form data to a server here
+    // });
+
+
+
+    // Cancel button
+    document.querySelector('.cancel-btn').addEventListener('click', function() {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, go home page"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success"
+          });
+
+
+          setTimeout(() => {
+            console.log("5 seconds passed!");
+            window.location.assign("companyMainPage.html");
+          }, 2000); // 5000 milliseconds = 5 seconds
+        }
+      });
+
+    });
+  });
+
+  // -------------------------------------------------------------------
+
+  var map = L.map('map').setView([7.8731, 80.7718], 7);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'© OpenStreetMap contributors'
+  }).addTo(map);
+
+  var markers = [];
+  var selectedLocations = [];
+
+  // Geocoder Search
+  var geocoder = L.Control.geocoder({ defaultMarkGeocode: false })
+          .on('markgeocode', function(e) {
+            var center = e.geocode.center;
+            var name = e.geocode.name;
+            selectedLocations.push({name:name, lat:center.lat, lng:center.lng});
+            openModal();
+            map.setView(center, 12);
+          }).addTo(map);
+
+  // Manual click select
+  map.on('click', function(e){
+    selectedLocations.push({name:"Manual Selected", lat:e.latlng.lat, lng:e.latlng.lng});
+    openModal();
+  });
+
+  // Modal open/close
+  function openModal() {
+    document.getElementById("locationModal").style.display = "block";
+    document.body.style.overflow = "hidden";
+    setTimeout(()=> {
+      map.invalidateSize();
+
+      // Clear old markers
+      markers.forEach(m => map.removeLayer(m));
+      markers = [];
+
+      // Render all selected markers
+      selectedLocations.forEach(loc=>{
+        var marker = L.marker([loc.lat, loc.lng]).addTo(map)
+                .bindPopup(loc.name + "<br>("+loc.lat.toFixed(4)+", "+loc.lng.toFixed(4)+")");
+        markers.push(marker);
+      });
+
+      // Fit map bounds to markers
+      if(markers.length>0){
+        var group = new L.featureGroup(markers);
+        map.fitBounds(group.getBounds().pad(0.2));
+      }
+
+    }, 1000);
+  }
+
+  function closeModal() {
+    document.getElementById("locationModal").style.display = "none";
+    document.body.style.overflow = "auto";
+  }
+
+  // Set Locations
+  document.getElementById("setLocationBtn").addEventListener("click", function(){
+    if(selectedLocations.length>0){
+      let text = "";
+      selectedLocations.forEach((loc,i)=>{
+        text += (i+1)+". "+loc.name+" ("+loc.lat.toFixed(4)+", "+loc.lng.toFixed(4)+")\n";
+      });
+      document.getElementById("companyLocations").value = text;
+      console.log(text);
+    } else {
+      document.getElementById("jobLocations").value = "No locations selected!";
+    }
+    closeModal();
+  });
+
+  // Clear Locations
+  document.getElementById("clearBtn").addEventListener("click", function(){
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+    selectedLocations = [];
+  });
+
+
+
+
+  //   ------------------------------------------------
+
+
+
+</script>
+
+</body>
+</html>

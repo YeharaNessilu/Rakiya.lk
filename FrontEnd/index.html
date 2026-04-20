@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+    <link href="css/indexCss.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+    <!--    <link href="css/normalize.css" rel="stylesheet">-->
+
+    <style>
+        /* Navigation Tabs */
+        .profile-nav {
+            display: flex;
+            justify-content: center;
+            border-bottom: 2px solid #eee;
+            margin-bottom: 20px;
+        }
+        .nav-item {
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav-item:hover {
+            background: #f2f2f2;
+            border-radius: 10px 10px 0 0;
+        }
+        .nav-item.active {
+            border-bottom: 3px solid #3498db;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .social-container {
+            margin: 10px 0 20px;
+        }
+        .social-container a {
+            border: 1px solid #DDDDDD;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 5px;
+            height: 40px;
+            width: 40px;
+            font-size: 18px;
+            color: #333;
+            transition: 0.3s;
+        }
+        .social-container a:hover {
+            background: #0fd850;
+            color: white;
+            transform: scale(1.1);
+        }
+
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            opacity: 0;
+            /*transition: opacity 0.4s ease-in-out;*/
+        }
+
+        .content-section.active {
+            display: block;
+            opacity: 1;
+        }
+
+
+        .fade-in {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        /* Email Row */
+        .email-container {
+            position: relative;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .email-container input {
+            width: 100%;
+            padding: 12px 120px 12px 15px; /* right padding to leave space for button */
+            /*border: 1px solid #ccc;*/
+            border-radius: 5px;
+        }
+
+        .email-container button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 8px 12px;
+            background-color: #2575fc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .email-container button:hover {
+            background-color: #1a5edb;
+        }
+
+
+        /* Submit Button */
+        form button[type="submit"] {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            background: linear-gradient(135deg, #0fd850, #07b43d);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        form button[type="submit"]:hover {
+            background: linear-gradient(135deg, #07b43d, #0fd850);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="container">
+    <div class="form-container sign-up-container">
+        <div class="profile-nav">
+            <div class="nav-item active" data-target="user">User</div>
+            <div class="nav-item" data-target="company">Company</div>
+        </div>
+
+        <div id="user" class="content-section animate active">
+            <form>
+                <h1> User Account</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your email for registration</span>
+                <input ID="nameText" type="text" placeholder="Name" />
+                <div class="email-container">
+                    <input  type="email" placeholder="Email" id="emailText" />
+                    <button type="button" id="sendOtpBtn">Send OTP</button>
+                </div>
+                <input id="otpText" type="number" placeholder="OTP" />
+                <input id="passwordText" type="password" placeholder="Password" />
+                <input id="confirmPasswordText" type="password" placeholder="Confirm Password" />
+                <button ID="signup_btn" type="submit">Sign Up</button>
+            </form>
+        </div>
+
+        <div id="company" class="content-section animate">
+            <form>
+                <h1> Company Account</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your email for registration</span>
+                <input id="companyNameText" type="text" placeholder="Company Name" />
+                <div class="email-container">
+                    <input type="email" placeholder="Company Email" id="companyEmailText" />
+                    <button type="button" id="companySendOtpBtn">Send OTP</button>
+                </div>
+                <input id="companyOtpText" type="number" placeholder="OTP" />
+                <input id="companyPasswordText" type="password" placeholder="Password" />
+                <input id="companyConfirmPasswordText"type="password" placeholder="Confirm Password" />
+                <button id="companySignUPBtn" type="submit">Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="form-container sign-in-container">
+        <form action="#">
+            <h1>Sign in</h1>
+            <div class="social-container">
+                <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <span>or use your account</span>
+            <input id="signInEmail" type="email" placeholder="Email" autocomplete="username">
+            <input id="signInPassword" type="password" placeholder="Password" autocomplete="current-password">
+            <a href="#">Forgot your password?</a>
+            <button id="signIn_Btn">Sign In</button>
+        </form>
+    </div>
+    <div class="overlay-container">
+        <div class="overlay">
+            <div class="overlay-panel overlay-left">
+                <h1>Welcome Back!</h1>
+                <p>To keep connected with us please login with your personal info</p>
+                <button class="ghost" id="signIn">Sign In</button>
+            </div>
+            <div class="overlay-panel overlay-right">
+                <h1>Hello, Friend!</h1>
+                <p>Enter your personal details and start journey with us</p>
+                <button class="ghost" id="signUp">Sign Up</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<footer>-->
+<!--  <p>-->
+<!--    Created with <i class="fa fa-heart"></i> by-->
+<!--    <a target="_blank" href="https://florin-pop.com">Florin Pop</a>-->
+<!--    - Read how I created this and how you can join the challenge-->
+<!--    <a target="_blank" href="https://www.florin-pop.com/blog/2019/03/double-slider-sign-in-up-form/">here</a>.-->
+<!--  </p>-->
+<!--</footer>-->
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script src="js/indexJs.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navItems = document.querySelectorAll('.profile-nav .nav-item');
+        const sections = document.querySelectorAll('.content-section');
+
+        // default User form active
+        sections.forEach(s => s.style.display = "none");
+        document.getElementById('user').style.display = "block";
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function () {
+                const target = this.getAttribute('data-target');
+
+                navItems.forEach(i => i.classList.remove('active'));
+                sections.forEach(s => {
+                    s.classList.remove('active');
+                    s.style.display = "none";
+                });
+
+                this.classList.add('active');
+                const activeSection = document.getElementById(target);
+                activeSection.style.display = "block";
+                setTimeout(() => activeSection.classList.add('active'), 50); // fade-in animation
+            });
+        });
+    });
+
+</script>
+
+</body>
+</html>
